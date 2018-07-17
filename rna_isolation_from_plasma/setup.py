@@ -1,3 +1,15 @@
+
+from opentrons import robot, containers, instruments
+from opentrons.util import environment
+
+robot.connect(robot.get_serial_ports_list()[0])
+robot.is_connected()
+robot.home()
+
+environment.refresh()   # point python to your App's calibration file
+print(environment.get_path('CALIBRATIONS_FILE'))   # should print the location of file
+
+
 #fix from https://github.com/OpenTrons/opentrons/issues/314
 def create_container_instance(name, grid, spacing, diameter, depth,
                               volume=0, slot=None, label=None):

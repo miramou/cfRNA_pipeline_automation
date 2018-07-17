@@ -1,14 +1,17 @@
 ##SCRIPT TO TRANSFER SLURRY + LYSIS BUFFER TO 48 well PLATE
-##TIME TO RUN: ~XX minutes
+##TIME TO RUN: ~17 minutes
 
 from opentrons import robot, containers, instruments
+from setup import *
+from datetime import datetime
+import sys
 
 #PLATE SETUP
 #Load custom containers using bug fix
 
 #Pipette racks
 racks = []
-rack_slots = ["A2", "B2", "C2"]
+rack_slots = ["E1", "E2"]
 
 for slot_i in rack_slots:
 	racks.append(
@@ -24,7 +27,7 @@ for slot_i in rack_slots:
 
 #Sample plates
 plates = []
-plate_slots = ["A1", "B1"]
+plate_slots = ["B1", "B2"]
 
 for slot_i in plate_slots:
 	plates.append(
@@ -38,28 +41,27 @@ for slot_i in plate_slots:
 		)
 	)
 
-sample_rows = plates[0].rows()+plates[1].rows()
 
 #Load trash
-trash = containers.load('trash-box', 'E2')
+trash = containers.load('trash-box', 'D1')
 
 #Load slurry, lysis buffer
 slurry =  create_container_instance(
     '96-well-300mL-EK-2035-S',
     grid =(8,12), #cols,rows
-    spacing=(8,8), #mm spacing between each col,row
+    spacing=(9,9), #mm spacing between each col,row
     diameter=8,
     depth=15, #depth mm of each well 
-    slot='C1'
+    slot='A1'
 )
 
 lysis =  create_container_instance(
     '96-well-300mL-EK-2035-S',
     grid =(8,12), #cols,rows
-    spacing=(8,8), #mm spacing between each col,row
+    spacing=(9,9), #mm spacing between each col,row
     diameter=8,
     depth=15, #depth mm of each well 
-    slot='D1'
+    slot='A2'
 )
 
 p1200_multi = instruments.Pipette(
@@ -72,7 +74,30 @@ p1200_multi = instruments.Pipette(
 )
 
 #PROTOCOL
-lysis_volume = 1800
-p1200_multi.transfer(200, slurry.rows(), sample_rows, new_tip='always')
-p1200_multi.transfer(1800, lysis.rows(), sample_rows, new_tip='always')
-robot.comment("Run transfer_sample_tube_to_48_well_plate.py next to add plasma.")
+lysis_volume = float(sys.argv[1])
+
+start=datetime.now()
+print("Step 1: Add lysis and slurry to plate")
+print("%s" % (start))
+
+src_row = 1
+
+for i in range(2):
+    for dst_row in plates[i].rows():
+        p1200_multi.transfer(200, 
+            slurry.rows(str(src_row)), 
+            dst_row.bottom(), 
+            trash=False
+        )
+
+        p1200_multi.transfer(lysis_volume, 
+            lysis.rows(str(src_row)), 
+            dst_row.bottom(), 
+            trash=False
+        )
+
+        src_row += 1
+    robot.home()
+
+
+print("Total time: %s" % (datetime.now()-start))

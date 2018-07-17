@@ -2,13 +2,15 @@
 ##TIME TO RUN: ~XX minutes
 
 from opentrons import robot, containers, instruments
+from setup import *
+from datetime import datetime
 
 #PLATE SETUP
 #Load custom containers using bug fix
 
 #Pipette racks
 racks = []
-rack_slots = ["A2", "B2", "C2"]
+rack_slots = ["E1", "E2"]
 
 for slot_i in rack_slots:
 	racks.append(
@@ -24,7 +26,7 @@ for slot_i in rack_slots:
 	
 #Sample plates
 plates = []
-plate_slots = ["A1", "B1"]
+plate_slots = ["B1", "B2"]
 
 for slot_i in plate_slots:
 	plates.append(
@@ -38,8 +40,6 @@ for slot_i in plate_slots:
 		)
 	)
 
-sample_rows = plates[0].rows()+plates[1].rows()
-
 #Load final plate
 final_plate = create_container_instance(
     '96-well-1mL-Axygen',
@@ -47,11 +47,11 @@ final_plate = create_container_instance(
     spacing=(8,8), #mm spacing between each col,row
     diameter=8,
     depth=15, #depth mm of each well 
-    slot='D1'
+    slot='A1'
 )
 
 #Load trash
-trash = containers.load('trash-box', 'E2')
+trash = containers.load('trash-box', 'D1')
 
 #Load etoh
 etoh =  create_container_instance(
@@ -60,7 +60,7 @@ etoh =  create_container_instance(
     spacing=(8,8), #mm spacing between each col,row
     diameter=8,
     depth=15, #depth mm of each well 
-    slot='C1'
+    slot='A2'
 )
 
 p1200_multi = instruments.Pipette(
@@ -73,7 +73,36 @@ p1200_multi = instruments.Pipette(
 )
 
 #PROTOCOL
-etoh_vol=300
-p1200_multi.transfer(etoh_vol, etoh.rows(), sample_rows, new_tip='always', mix_after=(20, 1200))
-p1200_multi.transfer(800, sample_rows, final_plate, new_tip='always', mix_before=(5,400))
-robot.comment("Finished :)")
+start = datetime.now()
+print("Step 4: Add ethanol and transfer to 96-well plate")
+print("%s" % (start))
+
+src_row=1
+for i in range(2):
+    for dst_row in plates[i].rows():
+
+        p1200_multi.transfer(300, 
+            etoh.rows(str(src_row)), 
+            dst_row.bottom(),
+            new_tip="always",
+            trash=False
+        )
+
+        src_row += 1
+
+robot.home()
+
+dst_row = 1
+for i in range(2):
+    for src_row in plates[i].rows():
+        p1200_multi.transfer(800, 
+            src_row, 
+            final_plate.rows(str(dst_row)), 
+            mix_before=(10,400),
+            new_tip="always", 
+            trash=False
+        )
+
+        dst_row += 1
+
+print("Total time: %s" % (datetime.now()-start))
