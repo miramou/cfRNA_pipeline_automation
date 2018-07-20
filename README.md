@@ -1,5 +1,5 @@
 # Running cfRNA extraction from plasma pipeline using Opentrons
-*Takes ~1.5 hours followed by 1.5 hours on Bravo.*
+***Takes ~1.5 hours followed by 1.5 hours on Bravo.***
 
 # Overview
 * Implements all steps up to using filter plate to clean up cfRNA extracted using Norgen kit. 
