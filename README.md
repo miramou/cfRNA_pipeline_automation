@@ -1,16 +1,17 @@
 # Running cfRNA extraction from plasma pipeline using Opentrons
-## Takes ~1.5 hours followed by 1.5 hours on Bravo.
+*Takes ~1.5 hours followed by 1.5 hours on Bravo.*
 
+# Overview
 * Implements all steps up to using filter plate to clean up cfRNA extracted using Norgen kit. 
 * Can process up to 1 mL of plasma in each well of 48 well plate (Max vol 7.5 mL).
 * Keep your eye on the robot! Sometimes tips dont come off all the way (rarely) and you need to step in. This is the only somewhat difficult step to watch for
 * The slowest steps on this robot are by far moving the pipette over. The motors are slow so this has been optimized to reduce the number of large movements like tips on/tips off
 
-#How to run
+# How to run
 * Thoroughly clean Opentrons robot and check calibrations using 0_calibration file - uncommenting and commenting for objects in the same physical position as needed
 * Deploy bash script "run_cfRNA_pipeline.sh" to run pipeline (Note that pipeline currently set up to process 1 mL samples. Change buffer volumes if needed)
 
-#The steps
+# The steps
 * Clean workspace thoroughly
 * Thaw samples at room temp
 * At the same time, run 1_add_slurry_lysis_to_plate.py
