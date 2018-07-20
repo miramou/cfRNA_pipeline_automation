@@ -46,7 +46,7 @@ for slot_i in plate_slots:
 trash = containers.load('trash-box', 'D1')
 
 #Load slurry, lysis buffer
-slurry =  create_container_instance(
+lysis =  create_container_instance(
     '96-well-300mL-EK-2035-S',
     grid =(8,12), #cols,rows
     spacing=(9,9), #mm spacing between each col,row
@@ -55,12 +55,12 @@ slurry =  create_container_instance(
     slot='A1'
 )
 
-lysis =  create_container_instance(
-    '96-well-300mL-EK-2035-S',
+slurry =  create_container_instance(
+    '96-well-252mL-EK-2034-S-12-Col-Divided',
     grid =(8,12), #cols,rows
     spacing=(9,9), #mm spacing between each col,row
     diameter=8,
-    depth=15, #depth mm of each well 
+    depth=45, #depth mm of each well 
     slot='A2'
 )
 
@@ -86,7 +86,8 @@ src_row = 1
 p1200_multi.pick_up_tip()
 
 for i in range(2):
-#Just minutes per plate
+#Just under 3 minutes per plate
+#Works well if added 200 mL lysis buffer + 1.2% B-met
 
 	loop_start = datetime.now()
 
@@ -95,7 +96,9 @@ for i in range(2):
 		p1200_multi.transfer(lysis_volume,
 			lysis.rows(str(src_row)), 
 			dst_row.bottom(), 
-			new_tip="never"
+			new_tip="never",
+			blow_out=True,
+			air_gap=20
 		)
 
 		src_row += 1
@@ -103,25 +106,26 @@ for i in range(2):
 	print("Time for loop completion: %s" % (datetime.now() - loop_start))
 
 p1200_multi.drop_tip()
-
 robot.home()
 
 p1200_multi.pick_up_tip()
-src_row = 1
-for i in range(2):
-#Just minutes per plate
+src_row = str(1)
 
-    loop_start = datetime.now()
+for i in range(2):
+#Just about 3 minutes and 30 seconds per plate
+#Works well if add 21 mL slurry to column 1 of divided plate holder
+
+	loop_start = datetime.now()
 
 	for dst_row in plates[i].rows():
-		p1200_multi.transfer(200,
-			slurry.rows(str(src_row)),
-			dst_row.top(-40),
-			new_tip="never"
-		)
+		#Separated transfer wrapper into distinct steps for further control on apsiration rate and movement
+		p1200_multi.mix(3, 1000, slurry.rows(src_row))
+		p1200_multi.blow_out(slurry.rows(src_row))
+		p1200_multi.aspirate(220, slurry.rows(src_row),rate=0.1)
+		p1200_multi.delay(3)
+		p1200_multi.dispense(200, dst_row.top(-12))
+		p1200_multi.blow_out(slurry.rows(src_row))
 		
-		src_row += 1
-
 	print("Time for loop completion: %s" % (datetime.now() - loop_start))
 
 
