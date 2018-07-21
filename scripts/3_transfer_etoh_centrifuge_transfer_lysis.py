@@ -163,9 +163,6 @@ for i in range(2):
 
         count += 1
 
-        if count == 7:
-            src_row += 1
-
         if count == 11:
             robot.pause()
             check = input("Replace tip rack E1. Press enter to continue. ")
@@ -175,8 +172,9 @@ for i in range(2):
     print("Time for loop completion: %s" % (datetime.now() - loop_start)) #About 4 min
 
     if i==0:
+        src_row += 1
         robot.pause()
-        check = input("Remove B1, seal, and incubate for 10 min at 60C. Press enter to continue with lysis addition + mixing for B2 ")
+        check = input("Remove B1, seal, and incubate for 10 min at 60C. Remove seal from lysis reservoir column 4 in A2. Press enter to continue with lysis addition + mixing for B2 ")
         robot.resume()
 
 print("Seal and incubate B2 for 10 min at 60C.")
