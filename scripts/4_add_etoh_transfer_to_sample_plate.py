@@ -51,15 +51,15 @@ final_plate = create_container_instance(
 )
 
 #Load trash
-trash = containers.load('trash-box', 'D1')
+trash = containers.load('trash-box', 'D2')
 
 #Load etoh
 etoh =  create_container_instance(
-    '96-well-300mL-EK-2035-S',
+    '96-well-252mL-EK-2034-S-12-Col-Divided',
     grid =(8,12), #cols,rows
     spacing=(9,9), #mm spacing between each col,row
     diameter=8,
-    depth=15, #depth mm of each well 
+    depth=45, #depth mm of each well 
     slot='A2'
 )
 
@@ -79,8 +79,8 @@ start = datetime.now()
 print("Step 4: Add ethanol and transfer to 96-well plate")
 print("%s" % (start))
 
-p1200_multi.start_at_tip(racks[0].rows("10"))
 row_96=1
+src_row = 4
 for i in range(2):
 #Just under 6 min per plate
 
@@ -90,17 +90,16 @@ for i in range(2):
         p1200_multi.pick_up_tip()
 
         p1200_multi.transfer(300, 
-            etoh.rows(str(row_96)), 
+            etoh.rows(str(src_row)), 
             row_48.bottom(),
-            mix_after=(10,400),
+            mix_after=(10,450),
             new_tip="never",
         )
 
-        p1200_multi.transfer(800,
-            row_48, 
-            final_plate.rows(str(row_96)).bottom(),
-            new_tip="never"
-        )
+        p1200_multi.aspirate(800, row_48.bottom(-2), rate=0.25)
+        p1200_multi.dispense(800, final_plate.rows(str(row_96)).bottom())
+        p1200_multi.blow_out()
+
         p1200_multi.drop_tip()
 
         row_96 += 1
@@ -108,8 +107,9 @@ for i in range(2):
     print("Loop completion time: %s" % (datetime.now()-loop_start))
 
     if i==0:
+        src_row += 1
         robot.pause()
-        check = input("Once B2 has completed incubation, remove seal and place on robot. Press enter to continue with EtOH addition + mixing for B2 ")
+        check = input("Once B2 has completed incubation, remove seal and place on robot. Remove seal from reservoir column 5. Press enter to continue with EtOH addition + mixing for B2 ")
         robot.resume()
 
     robot.home()
