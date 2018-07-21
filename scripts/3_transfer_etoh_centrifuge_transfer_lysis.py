@@ -44,7 +44,8 @@ for slot_i in plate_slots:
 	)
 
 #Load trash
-trash = containers.load('trash-box', 'D1')
+liquid_trash = containers.load('trash-box', 'D1')
+trash = containers.load('trash-box', 'D2')
 
 #Load EtOH, lysis buffer
 etoh =  create_container_instance(
@@ -57,11 +58,11 @@ etoh =  create_container_instance(
 )
 
 lysis =  create_container_instance(
-    '96-well-300mL-EK-2035-S',
+    '96-well-252mL-EK-2034-S-12-Col-Divided',
     grid =(8,12), #cols,rows
     spacing=(9,9), #mm spacing between each col,row
     diameter=8,
-    depth=15, #depth mm of each well 
+    depth=45, #depth mm of each well 
     slot='A2'
 )
 
@@ -93,7 +94,7 @@ for i in range(2):
     for dst_row in plates[i].rows():
         p1200_multi.transfer(etoh_vol, 
             etoh.rows(str(src_row)), 
-            dst_row.top(-12),
+            dst_row.top(-10),
             new_tip="never"
         )
 
@@ -117,6 +118,9 @@ robot.resume()
 
 robot.home()
 
+to_remove_vol = [1000, 1000, 1000, 1000, 1000, 800]
+to_remove_height = [25,25, 15, 6, 2, 0.1]
+
 for i in range(2):
 #Just over 7 minutes per plate
 
@@ -126,11 +130,13 @@ for i in range(2):
         
         p1200_multi.pick_up_tip()
 
-        p1200_multi.transfer(5000, 
-            row.bottom(25), 
-            trash, 
-            new_tip='never'
-        )
+        for i in range(len(to_remove_vol)):
+            p1200_multi.transfer(to_remove_vol[i], 
+                row.bottom(to_remove_height[i]), 
+                liquid_trash,
+                blow_out=True, 
+                new_tip='never'
+            )
 
         p1200_multi.drop_tip()
 
@@ -138,29 +144,10 @@ for i in range(2):
 
     robot.home()
 
-    if i==0:
-        robot.pause()
-        check = input("Remove B1 and finish supernatant removal. Press enter to continue with supernatant removal for B2 ")
-        robot.resume()
 
-        # has_more = int(input("More supernatant to aspirate? (True/False)"))
+src_row = 2
+count = 1
 
-        # while has_more:
-        #     to_remove = float(input("Enter how much to aspirate (uL)."))
-        #     height = int(input("Enter how far from the bottom of the well you'd like to aspirate in mm."))
-
-        #     p1200_multi.transfer(to_remove, 
-        #         row.bottom(height), 
-        #         trash, 
-        #         new_tip='never',
-        #         trash = False)
-
-        #     has_more = bool(input("More supernatant to aspirate? (True/False)"))
-        
-        #p1200_multi.drop_tip(trash)
-        
-
-src_row = 1
 for i in range(2):
 #Just over 4 minutes per plate
 
@@ -170,13 +157,16 @@ for i in range(2):
         p1200_multi.transfer(300, 
             lysis.rows(str(src_row)),
             dst_row.bottom(),
-            mix_after=(10,200), 
+            mix_after=(10,200),
             new_tip="always"
         )
 
-        src_row += 1
+        count += 1
 
-        if src_row == 11:
+        if count == 7:
+            src_row += 1
+
+        if count == 11:
             robot.pause()
             check = input("Replace tip rack E1. Press enter to continue. ")
             robot.resume()
