@@ -43,7 +43,7 @@ for slot_i in plate_slots:
 
 
 #Load trash
-trash = containers.load('trash-box', 'D1')
+trash = containers.load('trash-box', 'D2')
 
 #Load slurry, lysis buffer
 lysis =  create_container_instance(
