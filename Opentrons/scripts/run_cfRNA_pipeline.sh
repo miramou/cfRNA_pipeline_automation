@@ -33,7 +33,7 @@ while true; do
 	esac
 done
 
-read -p "Check the positions of: Tip boxes: E1, E2. Lysis: A1. Slurry: A2. Sample plates: B1, B2. Trash: D1. Type go to start 1_add_slurry_lysis_to_plate. " go
+read -p "Check the positions of: Tip boxes: E1. Lysis: A1. Slurry: A2. Sample plates: B1, B2. Trash: D1. Type go to start 1_add_slurry_lysis_to_plate. " go
 while true; do
 	case $go in
 		[Gg]* ) break ;;
@@ -43,11 +43,13 @@ done
 
 python $STEP_1 $LYSIS_VOL
 
-read -p "Add sample, mix, and incubate for 10 min at 60C by hand using variably spaced 1.2 mL multichannel pipeptte. Type go once completed. " go
+echo "Save tip box from this step and place to the side with lid."
+
+read -p "Check the positions of: Tip boxes: C1. Sample rack for sample rows A-D for plate 1: B1. Sample plate 1: B2. Trash: C2. Type go to start 2_transfer_sample_tube_to_48_well_plate. " go
 while true; do
 	case $go in
 		[Gg]* ) break ;;
-		* ) read -p "Please enter go when you've completed the task. " go;;
+		* ) read -p "Please enter go when you've confirmed object locations. " go;;
 	esac
 done
 
