@@ -4,30 +4,32 @@
 # Overview
 * Implements all steps up to using filter plate to clean up cfRNA extracted using Norgen kit. 
 * Can process up to 1 mL of plasma in each well of 48 well plate (Max vol 7.5 mL).
-* Keep your eye on the robot! Sometimes tips dont come off all the way (rarely) and you need to step in. This is the only somewhat difficult step to watch for
-* The slowest steps on this robot are by far moving the pipette over. The motors are slow so this has been optimized to reduce the number of large movements like tips on/tips off
+* Protocol run time relies on reagent setup (configuration), head speed (see setup.py), and plunger speed (see each ind. script)
 
 # Setup
-* Make sure you have prepped reagents ahead of time (e.g. added 1.2% B-Met to lysis buffer).
+* Make sure you have prepped reagents ahead of time (e.g. added 1.2% B-Met and 1:1000 ERCC to lysis buffer).
 * Preheat both lysis and slurry for 10 minutes. Vortex slurry for 1 minute intermittently to dissolve precipitated slurry.
-* Note that slurry, lysis buffer (Script 3), and EtOH (Script 4) all go in same 12 col divided reservoir:
+* Note that slurry, lysis buffer (Script 5), and EtOH (Script 4) all go in same 12 col divided reservoir:
 	* Seal all columnns with plate sticker - remove plate sticker incremently when reagent is needed.
-	* Slurry in Col 1 (21 mL)
-	* Lysis buffer in Col 2 and 3 (20 mL each col) Script will tell you when to remove seal for second column
-	* EtOH in Col 4 and 5 (20 mL each col) Script will tell you when to remove seal for second column
+	* Slurry in Col 1,2 (12 mL each col) Wait for script to tell you to add to second plate. Slurry easily solidifies
+	* Lysis buffer in Col 4,5 (20 mL each col)
+	* EtOH in Col 7,8 (20 mL each col)
 
 # How to run
-* Thoroughly clean Opentrons robot and check calibrations using 0_calibration file - uncommenting and commenting for objects in the same physical position as needed
+* Each month, check that all screws are tightly fastened on robot
+* Thoroughly clean Opentrons robot. Careful not to bump pipettes though they should be solidly in place.
+* Check calibrations using 0_calibration file - uncommenting and commenting for objects in the same physical position as needed
 * Line trash at D1 (liquid) and D2 (pipettes) with ziploc bags. Also add a few absorbent paper towels to D1. 
 * Deploy bash script "run_cfRNA_pipeline.sh" to run pipeline (Note that pipeline currently set up to process 1 mL samples. Change buffer volumes if needed)
 
 # The steps
+* Refrigerate sample blocks
 * Clean workspace thoroughly
 * Thaw samples at room temp
 * At the same time, run 1_add_slurry_lysis_to_plate.py
 	* This script adds slurry and lysis buffer to 2 clean 48-well plates. 
-* Add samples by hand using variably spaced 1.2 mL multichannel. The included script takes too long
-* Run 3_transfer_etoh_centrifuge_transfer_lysis.py
+* Run 2_transfer_sample_tube_to_48_well_plate.py to transfer samples.
+* Run 3_transfer_etoh_centrifuge_remove_sup.py.
 	* This script expects you to multitask with the robot. It will tell you when you should interface.
 		* For instance, you might mix EtOH with sample for plate B1 as it adds reagent to plate B2. This is for speed.
 	* You will seal and incubate plate 1 at 60C while plate 2 is being processed.
