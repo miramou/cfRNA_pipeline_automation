@@ -1,5 +1,5 @@
 ##SCRIPT TO TRANSFER PLASMA SAMPLES TO 48 well PLATE
-##TIME TO RUN: ~20 minutes
+##TIME TO RUN: ~20 minutes per plate - 40 minutes total
 ##TOTAL TIPS USED: 2 boxes
 
 from opentrons import robot, containers, instruments
