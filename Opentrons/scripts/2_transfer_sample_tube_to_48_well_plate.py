@@ -20,9 +20,9 @@ for slot_i in rack_slots:
 		create_container_instance(
 		    'rainin-tiprack-1200ul',
 		    grid =(8,12), #cols,rows
-		    spacing=(9.05,8.9), #mm spacing between each col,row
+		    spacing=(9.08,8.9), #mm spacing between each col,row
 		    diameter=8,
-		    depth=110, #depth mm of each well 
+		    depth=200, #depth mm of each well 
 		    slot=slot_i
 		)
 	)
@@ -99,21 +99,21 @@ for i in range(2):
 			check = input("Please place second sample rack at position B1. Press enter to continue. ")
 			robot.resume()
 
-
-
 	robot.home()
-	p1200_multi.start_at_tip(racks[0].rows(6))
+	
+	# robot.pause()
+	# check = input("Remove sample rack from position B1. Press enter to continue. ")
+	# robot.resume()
 
-	loop_start = datetime.now()
-	## Takes about 4 minutes to mix plate
+	# p1200_multi.start_at_tip(racks[0].rows(6))
 
-	for row in plate.rows():
-		p1200_multi.transfer(0, 
-			row, 
-			row.bottom(), 
-			mix_before=(6,1000),
-			new_tip="always",
-		)
+	# loop_start = datetime.now()
+	# ## Takes about 4 minutes to mix plate
+
+	# for row in plate.rows():
+	# 	p1200_multi.pick_up_tip()
+	# 	p1200_multi.mix(6, 1000, row.bottom())
+	# 	p1200_multi.drop_tip()
 
 	print("Time for loop completion: %s" % (datetime.now() - loop_start))
 

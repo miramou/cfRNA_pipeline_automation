@@ -13,7 +13,7 @@ print(environment.get_path('CALIBRATIONS_FILE'))   # should print the location o
 ## Default speed: {"x": 12000, "y": 12000, "z": 3000, "a": 700, "b": 700}
 ## Max speed: {"x": 20000,  "y": 20000,  "z": 6000, "a": 1200, "b": 1200}
 
-robot.head_speed(x=18000, y=18000, z=4000, a=700, b=700) 
+robot.head_speed(x=18000, y=18000, z=3500, a=700, b=700) 
 
 
 #fix from https://github.com/OpenTrons/opentrons/issues/314

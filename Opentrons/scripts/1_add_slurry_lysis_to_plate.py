@@ -1,6 +1,6 @@
 ##SCRIPT TO TRANSFER SLURRY + LYSIS BUFFER TO 48 well PLATE
 ##TIME TO RUN: ~13.5 minutes
-##TOTAL TIPS USED: 0.5 boxes
+##TOTAL TIPS USED: 1 box
 
 from opentrons import robot, containers, instruments
 from setup import *
@@ -13,14 +13,14 @@ import math
 
 #Pipette racks
 racks = []
-rack_slots = ["E1", "E2"]
+rack_slots = ["E1"]
 
 for slot_i in rack_slots:
 	racks.append(
 		create_container_instance(
 		    'rainin-tiprack-1200ul',
 		    grid =(8,12), #cols,rows
-		    spacing=(9,8.9), #mm spacing between each col,row
+		    spacing=(9,9), #mm spacing between each col,row
 		    diameter=8,
 		    depth=110, #depth mm of each well 
 		    slot=slot_i
@@ -49,9 +49,9 @@ trash = containers.load('trash-box', 'D2')
 
 #Load slurry, lysis buffer
 lysis =  create_container_instance(
-    '96-well-300mL-EK-2035-S',
-    grid =(8,12), #cols,rows
-    spacing=(9,9), #mm spacing between each col,row
+    '96-well-150mL-EK-2299-2-Col-Divided',
+    grid =(8,2), #cols,rows
+    spacing=(9,54), #mm spacing between each col,row
     diameter=8,
     depth=15, #depth mm of each well 
     slot='A1'
@@ -87,6 +87,9 @@ print("%s" % (start))
 src_row_slurry = 1
 src_row_lysis = 1
 
+tips_on_set = set([1,3,5])
+tips_off_set = set([2,4,6])
+
 dispense_vol = lysis_volume
 dispense_iters = 1
 air_gap_vol = 100
@@ -99,14 +102,12 @@ if lysis_volume > 1000:
 for i in range(2):
 #Just under 3 minutes per plate
 #Lysis: Works well if added 220 mL lysis buffer + 1.2% B-met
-#Slurry: Works well if add 12 mL slurry to column 1,2 of divided plate holder. Do so when instructed to.
+#Slurry: Works well if add 10.5 mL slurry to column 1,2 of divided plate holder. Do so when instructed to.
 
 	robot.pause()
-	check = input("Add empty plate to %s. Add 12 mL slurry to position %s at A2. Add 110 mL lysis buffer (+120 uL 1:1000 ERCC) to position at A1. Seal filled plates while waiting. Press enter to continue. " % (plate_slots[i], i+1, ))
+	check = input("Add empty plate to %s. Add 10.5 mL slurry to position %s at A2. Add 110 mL lysis buffer (+120 uL 1:1000 ERCC) to position at A1. Seal filled plates while waiting. Press enter to continue. " % (plate_slots[i], i+1, ))
 	robot.resume()
 
-	tips_on_set = set([1,4])
-	tips_off_set = set([3,6])
 	loop_start = datetime.now()
 
 	count = 1
@@ -119,9 +120,8 @@ for i in range(2):
 		p1200_multi.blow_out(slurry.rows(str(src_row_slurry)))
 		p1200_multi.aspirate(200, slurry.rows(str(src_row_slurry)).bottom(),rate=0.1)
 		p1200_multi.delay(3)
-		p1200_multi.aspirate(50, slurry.rows(str(src_row_slurry)).bottom(), rate=1.0) #air gap
-		p1200_multi.dispense(200, dst_row.top(-12))
-		p1200_multi.blow_out(dst_row.top(-12))
+		p1200_multi.aspirate(50, slurry.rows(str(src_row_slurry)).top(30), rate=1.0) #air gap
+		p1200_multi.dispense(250, dst_row.bottom())
 		
 		if count in tips_off_set:
 			p1200_multi.drop_tip()
@@ -132,20 +132,24 @@ for i in range(2):
 
 	loop_start_lysis = datetime.now()
 
-	p1200_multi.pick_up_tip()
-
+	count = 1
 	for dst_row in plates[i].rows():
+
+		if count in tips_on_set:
+			p1200_multi.pick_up_tip()
+
 		for i in range(dispense_iters):
 			p1200_multi.aspirate(dispense_vol, lysis.rows(str(src_row_lysis)).bottom(), rate=1.0)
 			p1200_multi.delay(2)
 			p1200_multi.aspirate(air_gap_vol, lysis.rows(str(src_row_lysis)).top(30), rate=1.0) #air gap
-			p1200_multi.dispense(dispense_vol, dst_row.top(30))
-			p1200_multi.blow_out(dst_row.bottom())
+			p1200_multi.dispense((dispense_vol+air_gap_vol), dst_row.bottom(50))
 
-		src_row_lysis += 1
-	
-	p1200_multi.drop_tip()
+		if count in tips_off_set:
+			p1200_multi.drop_tip()
 
+		count += 1
+
+	src_row_lysis += 1
 	src_row_slurry += 1
 
 	print("Time for loop completion: %s" % (datetime.now() - loop_start_lysis))

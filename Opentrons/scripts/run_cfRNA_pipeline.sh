@@ -41,7 +41,7 @@ while true; do
 	esac
 done
 
-python $STEP_1 $LYSIS_VOL
+# python $STEP_1 $LYSIS_VOL
 
 echo "Save tip box from this step and place to the side with lid."
 
@@ -55,7 +55,7 @@ done
 
 python $STEP_2 $SAMPLE_VOL
 
-read -p "Check the positions of: Tip boxes: E1, E2. EtOH: A1. Lysis: A2 (Col 4,5). Sample plates: B1, B2. Trash: D1. Type go to start 3_transfer_etoh_centrifuge_transfer_lysis. " go
+read -p "Check the positions of: Tip boxes: E1, E2. EtOH: A1. Lysis: A2 (Col 4,5). Sample plates: B1, B2. Trash: D1. Liquid Trash: D2. Type go to start 3_transfer_etoh_centrifuge_remove_sup. " go
 while true; do
 	case $go in
 		[Gg]* ) break ;;

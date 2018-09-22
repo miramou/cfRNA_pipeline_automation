@@ -1,6 +1,6 @@
 ##SCRIPT TO TRANSFER EtOH TO 48 well PLATE AND TRANSFER TO 96 well PLATE
-##TIME TO RUN: ~12 minutes
-##TOTAL TIPS USED: 2 boxes
+##TIME TO RUN: ~15-20 minutes
+##TOTAL TIPS USED: 1 boxes
 
 from opentrons import robot, containers, instruments
 from setup import *
@@ -11,14 +11,14 @@ from datetime import datetime
 
 #Pipette racks
 racks = []
-rack_slots = ["E1", "E2"]
+rack_slots = ["E1"]
 
 for slot_i in rack_slots:
 	racks.append(
 		create_container_instance(
 		    'rainin-tiprack-1200ul',
 		    grid =(8,12), #cols,rows
-		    spacing=(9,8.9), #mm spacing between each col,row
+		    spacing=(9,9), #mm spacing between each col,row
 		    diameter=8,
 		    depth=110, #depth mm of each well 
 		    slot=slot_i
@@ -27,7 +27,7 @@ for slot_i in rack_slots:
 	
 #Sample plates
 plates = []
-plate_slots = ["B1", "B2"]
+plate_slots = ["B2"]
 
 for slot_i in plate_slots:
 	plates.append(
@@ -43,12 +43,12 @@ for slot_i in plate_slots:
 
 #Load final plate
 final_plate = create_container_instance(
-    '96-well-1mL-Axygen',
+    '96-well-Norgen-filter',
     grid =(8,12), #cols,rows
     spacing=(8.8,8.8), #mm spacing between each col,row
     diameter=8,
     depth=15, #depth mm of each well 
-    slot='A1'
+    slot='B1'
 )
 
 #Load trash
@@ -80,56 +80,38 @@ start = datetime.now()
 print("Step 4: Add ethanol and transfer to 96-well plate")
 print("%s" % (start))
 
-
-src_row = 4
-
-for i in range(2):
-#Just over 4 minutes per plate
-#Add 20 mL lysis buffer in columns 4-5
-
-    loop_start = datetime.now()
-
-    for dst_row in plates[i].rows():
-        p1200_multi.transfer(300, 
-            lysis_etoh.rows(str(src_row)),
-            dst_row.bottom(),
-            mix_after=(10,200),
-            blow_out = True,
-            new_tip="always"
-        )
-
-    print("Time for loop completion: %s" % (datetime.now() - loop_start)) #About 4 min
-
-    if i==0:
-        src_row += 1
-        robot.pause()
-        check = input("Remove B1, seal, and incubate for 10 min at 60C. Press enter to continue with lysis addition + mixing for B2 ")
-        robot.resume()
-
-robot.pause()
-check = input("Seal and incubate B2 for 10 min at 60C. Once B1 has completed incubation, remove seal, place back in position, and press enter. ")
-robot.resume()
-
 row_96 = 1
 src_row = 7
+
 for i in range(2):
 #Just under 6 min per plate
 
+    robot.pause()
+    check = input("Plate plate %s at position B2 after incubation. Remove seal. Remove seal from reservoir column %s at A2. Place filter plate + Axygen base at B1. Empty trash. Press enter to continue with EtOH addition + mixing. " % (i+1, src_row))
+    robot.resume()
+
     loop_start = datetime.now()
 
-    for row_48 in plates[i].rows():
+    for row_48 in plates[0].rows():
         p1200_multi.pick_up_tip()
 
         p1200_multi.transfer(300, 
             lysis_etoh.rows(str(src_row)), 
             row_48.bottom(),
-            mix_after=(5,450),
+            air_gap = 20,
             new_tip="never",
         )
 
-        p1200_multi.aspirate(800, row_48.bottom(-2), rate=0.25)
-        p1200_multi.air_gap(100)
-        p1200_multi.dispense(1000, final_plate.rows(str(row_96)).bottom())
+        p1200_multi.mix(5, 450, row_48.bottom(-2))
+        robot.home("z")
+
+        robot.pause()
+        check = input("Seal and vortex. Press enter to continue. ")
+        robot.resume()
+
+        p1200_multi.aspirate(900, row_48.bottom(-4.2), rate=0.25) ## Consider this by hand since it seems like I cant get all the resin? Or put in a pause here and put it on a plate shaker
+        p1200_multi.air_gap(20)
+        p1200_multi.dispense(920, final_plate.rows(str(row_96)).bottom(12))
         p1200_multi.blow_out()
 
         p1200_multi.drop_tip()
@@ -140,9 +122,6 @@ for i in range(2):
 
     if i==0:
         src_row += 1
-        robot.pause()
-        check = input("Once B2 has completed incubation, remove seal and place on robot. Remove seal from reservoir column 5. Press enter to continue with EtOH addition + mixing for B2 ")
-        robot.resume()
 
     robot.home()
 
