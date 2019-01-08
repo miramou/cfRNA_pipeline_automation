@@ -1,5 +1,5 @@
 ##SCRIPT TO TRANSFER EtOH TO 48 well PLATE AND TRANSFER TO 96 well PLATE
-##TIME TO RUN: ~15-20 minutes
+##TIME TO RUN: ~7 minutes
 ##TOTAL TIPS USED: 1 boxes
 
 from opentrons import robot, containers, instruments
@@ -16,11 +16,11 @@ rack_slots = ["E1"]
 for slot_i in rack_slots:
 	racks.append(
 		create_container_instance(
-		    'rainin-tiprack-1200ul',
+		    'rainin-tiprack-1000ul_long',
 		    grid =(8,12), #cols,rows
 		    spacing=(9,9), #mm spacing between each col,row
 		    diameter=8,
-		    depth=110, #depth mm of each well 
+		    depth=150, #depth mm of each well 
 		    slot=slot_i
 		)
 	)
@@ -109,7 +109,7 @@ for i in range(2):
         check = input("Seal and vortex. Press enter to continue. ")
         robot.resume()
 
-        p1200_multi.aspirate(900, row_48.bottom(-4.2), rate=0.25) ## Consider this by hand since it seems like I cant get all the resin? Or put in a pause here and put it on a plate shaker
+        p1200_multi.aspirate(900, row_48.bottom(-4.2), rate=0.25) 
         p1200_multi.air_gap(20)
         p1200_multi.dispense(920, final_plate.rows(str(row_96)).bottom(12))
         p1200_multi.blow_out()

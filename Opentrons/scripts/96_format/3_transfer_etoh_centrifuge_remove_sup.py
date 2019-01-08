@@ -130,7 +130,7 @@ for i in range(2):
     p1200_multi.start_at_tip(racks[0].rows("1"))
 
     to_remove_vol = [980, 980, 980, 980, 980, 900]
-    to_remove_height = [25,20, 15, 6, 1, -1]
+    to_remove_height = [25,20, 15, 6, 1, -1] ### Check heights with new setup
 
     loop_start_b = datetime.now()
 

@@ -122,25 +122,3 @@ def get_source_idx(dest_well):
         #     has_more = bool(input("More supernatant to aspirate? (True/False)"))
         
         #p1200_multi.drop_tip()
-
-### Extra code from 3 to aspirate EtOH. Takes same time as current but more time between first row and last row mixed.
-
-# for dst_row in plates[i].rows():
-           
-        #     loop_start_d = datetime.now()
-
-        #     p1200_multi.pick_up_tip()
-
-        #     p1200_multi.transfer(etoh_vol,
-        #         etoh.rows(str(src_row_etoh)),
-        #         dst_row.top(-20),
-        #         new_tip= "never"
-        #     )
-            
-        #     p1200_multi.mix(2, 1000, dst_row.bottom())
-        #     p1200_multi.mix(2, 1000, dst_row.bottom(20))
-        #     p1200_multi.mix(2, 1000, dst_row.bottom(27))
-
-        #     p1200_multi.drop_tip()
-
-        #     print("Time for loop completion: %s" % (datetime.now() - loop_start_d))
