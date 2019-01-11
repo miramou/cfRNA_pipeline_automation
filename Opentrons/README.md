@@ -1,3 +1,5 @@
+THIS README IS OLD AND NEEDS UPDATING :) TO BE UPDATED SOON
+
 # Running cfRNA extraction from plasma pipeline using Opentrons
 ***Takes ~1.5 hours followed by 1.5 hours on Bravo.***
 ***Uses 7 tip boxes total***
