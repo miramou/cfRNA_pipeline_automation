@@ -1,5 +1,5 @@
 ##SCRIPT TO ADD WASH BUFFER 3X TO NORGEN FILTER and ELUTE
-##TIME TO RUN: ~5.5 minutes + 22 minutes centrifuge/vacuum
+##TIME TO RUN: ~5 minutes + 22 minutes centrifuge
 ##TOTAL TIPS USED: 4 rows
 
 from opentrons import robot, containers, instruments
@@ -31,14 +31,14 @@ for slot_i in rack_slots:
 plate_slots = ["B1", "B2"]
 filter_plates = []
 
-for slot_i in plate_slots:
+for slot_i in plate_slots: #Only use up to row 11 on B2.
     filter_plates.append(
         create_container_instance(
             '96-well-Norgen-filter',
             grid =(8,12), #cols,rows
             spacing=(8.8,8.8), #mm spacing between each col,row
             diameter=8,
-            depth=15, #depth mm of each well 
+            depth=30, #depth mm of each well 
             slot=slot_i
         )
     )
@@ -87,7 +87,12 @@ elu_src_row = 7
 start_row = int(sys.argv[1])
 last_row = int(sys.argv[2])+1
 
-for i in range(4):
+max_vol = 1000
+disposal_vol = 50
+wash_vol = 400
+elu_vol = 120
+
+for i in range(4): 
 #Just under 5.5 min per plate
     
     loop_start = datetime.now()
@@ -101,40 +106,64 @@ for i in range(4):
 
         p1200_multi.pick_up_tip()
 
-        for row_i in range(start_row,last_row):
+        max_iters = (max_vol-disposal_vol) // wash_vol
+        iters = max_iters
+        
+        p1200_multi.aspirate(max_vol, wash.rows(str(src_row)))
 
-            p1200_multi.transfer(400, 
-                wash.rows(str(src_row)), 
-                filter_plates[0].rows(str(row_i)).bottom(22), 
-                air_gap = 20,
-                new_tip="never",
-            )
+        for row_i in range(start_row, last_row):
+            p1200_multi.dispense(wash_vol, filter_plates[0].rows(str(row_i)).bottom(22))
+            iters -= 1
+
+            if iters == 0 and row_i < (last_row-1):
+                row_dif = last_row - row_i
+                iters = max_iters
+
+                p1200_multi.dispense((max_vol - iters*wash_vol), wash.rows(str(src_row)))
+
+                if row_dif < max_iters:
+                    p1200_multi.aspirate((row_dif*wash_vol+disposal_vol), wash.rows(str(src_row)))
+                else:
+                    p1200_multi.aspirate(max_vol, wash.rows(str(src_row)))
+
 
         p1200_multi.drop_tip()
 
         robot.pause()
         if i<2:
-            print("Apply vacuum for 3 minutes. Add 24 mL wash buffer to 2-column wash reservoir at col 1. ")
+            print("Centrifuge for 3 min at max (3900 RPM). Add 24 mL wash buffer to 2-column wash reservoir at col 1. ")
         else:
-            print("Apply vacuum for 3 minutes. Pat bottom. Centrifuge for 5 minutes at max speed. ")
+            print("Centrifuge for 8 min at max speed (3900 RPM). ")
         robot.resume()
 
     else:
         ## Elute
         robot.pause()
-        check = input("Add 8 mL elution buffer to position %s in 12 column reservoir at A2. Move filter plate to B2. Press enter to continue. " % (elu_src_row))
+        check = input("Add 4 mL elution buffer to position %s in 12 column reservoir at A2. Move filter plate to B2. Press enter to continue. " % (elu_src_row))
         robot.resume()
 
         p1200_multi.pick_up_tip()
 
-        for row_i in range(start_row, last_row):
+        max_iters = (max_vol-disposal_vol) // elu_vol
+        iters = max_iters
+        
+        p1200_multi.aspirate(max_vol, elution.rows(str(elu_src_row)))
 
-            p1200_multi.transfer(120,
-                elution.rows(str(elu_src_row)),
-                filter_plates[1].rows(str(row_i)).bottom(22),
-                air_gap = 20,
-                new_tip = "never"
-            )
+        for row_i in range(start_row, last_row):
+            p1200_multi.dispense(elu_vol, filter_plates[1].rows(str(row_i)).bottom(22))
+            iters -= 1
+
+            if iters == 0 and row_i < (last_row-1):
+                row_dif = last_row - row_i
+                iters = max_iters
+
+                p1200_multi.dispense((max_vol - iters*elu_vol), elution.rows(str(elu_src_row)))
+
+                if row_dif < max_iters:
+                    p1200_multi.aspirate((row_dif*elu_vol+disposal_vol), elution.rows(str(elu_src_row)))
+                else:
+                    p1200_multi.aspirate(max_vol, elution.rows(str(elu_src_row)))
+
 
         p1200_multi.drop_tip()
 
@@ -143,5 +172,5 @@ for i in range(4):
     print()
 
 print("Total time: %s" % (datetime.now()-start))
-print("Centrifuge at max speed for 6 minutes. ")
+print("Centrifuge at max speed for 5 minutes. ")
 robot.home()
