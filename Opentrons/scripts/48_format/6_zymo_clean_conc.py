@@ -1,6 +1,7 @@
+#### To do - set up 2 mL alone at B2, set up 2 col div at A2. 
 ##SCRIPT TO ZYMO CLEAN AND CONCENTRATE
-##TIME TO RUN: ~27 minutes (with centrifugation)
-##TOTAL TIPS USED: 11 rows
+##TIME TO RUN: ~1 hour minutes (with centrifugation) for 12 rows
+##TOTAL TIPS USED: 17 rows
 
 from opentrons import robot, containers, instruments
 from setup import *
@@ -29,14 +30,13 @@ for slot_i in rack_slots:
 
 #Load sample plate
 sample_plate = create_container_instance(
-    '96-well-Axygen',
+    '96-well-2mL',
     grid =(8,12), #cols,rows
-    spacing=(8.8,8.8), #mm spacing between each col,row
+    spacing=(9,9), #mm spacing between each col,row
     diameter=8,
-    depth=15, #depth mm of each well 
-    slot="B2"
+    depth=40, #depth mm of each well 
+    slot="C1"
 )
-
 
 #Load filter plate
 filter_plate = create_container_instance(
@@ -51,14 +51,14 @@ filter_plate = create_container_instance(
 #Load trash
 trash = containers.load('trash-box', 'D2')
 
-#Load wash
+#Load reagents
 binding_etoh =  create_container_instance(
-    '96-well-252mL-EK-2034-S-12-Col-Divided',
-    grid =(8,12), #cols,rows
-    spacing=(9,9), #mm spacing between each col,row
+    '96-well-150mL-EK-2299-2-Col-Divided',
+    grid =(8,2), #cols,rows
+    spacing=(9,54), #mm spacing between each col,row
     diameter=8,
-    depth=45, #depth mm of each well 
-    slot='A2'
+    depth=15, #depth mm of each well 
+    slot='D1'
 )
 
 wash =  create_container_instance(
@@ -84,91 +84,116 @@ p1200_multi = instruments.Pipette(
 
 #PROTOCOL
 start = datetime.now()
-print("Step 5: Prep sample")
+print("Step 6: Zymo Clean and Concentrate")
 print("%s" % (start))
 
-src_row = 9 #binding + etoh source row
+binding_etoh_src_row = 1 #binding and etoh
 wash_src_row = 1 #prep and wash buffers 
 
 start_row = int(sys.argv[1])
 last_row = int(sys.argv[2])+1
+max_vol = 1000
+disposal_vol = 50
 
 volumes = [226, 339, 400, 700, 400] #Binding, EtOH, RNA Prep, Wash, Wash
-what_to_add = ["24 mL RNA prep", "42 mL wash buffer","24 mL wash buffer"]
+what_to_add = ["27 mL binding buffer", "40 mL EtOH", "48 mL RNA prep", "84 mL wash buffer","48 mL wash buffer"]
+
 
 for i in range(5): 
     loop_start = datetime.now()
 
     if i < 2:
         robot.pause()
-        if i == 0:
-            check = input("Place sample plate at position B2 after incubation. Remove seal from 12-column plate at A2 and add 13.5 mL RNA binding buffer to position 9. Empty trash. Press enter to continue. ")
-        else:
-            check = input("Place sample plate at position B2 after incubation. Place filter plate + 2 mL Fisher base at B1. Remove seal from 12-column plate at A2 and add 21 mL EtOH to position 11. Empty trash. Press enter to continue. ")
+        check = input("Place sample plate at C1. Add %s to column %s at D1 reservoir. Press enter to continue. " % (what_to_add[i], binding_etoh_src_row))
         robot.resume()
 
         p1200_multi.pick_up_tip()
 
-        for row_i in range(start_row,last_row):
+        max_iters = (max_vol-disposal_vol) // volumes[i]
+        iters = max_iters
+        
+        p1200_multi.aspirate(max_vol, binding_etoh.rows(str(binding_etoh_src_row)))
 
-            p1200_multi.transfer(volumes[i], 
-                binding_etoh.rows(str(src_row)), 
-                sample_plate.rows(str(row_i)).bottom(22), 
-                air_gap = 20,
-                new_tip="never",
-            )
+        for row_i in range(start_row, last_row):
+            p1200_multi.dispense(volumes[i], sample_plate.rows(str(row_i)).bottom(22))
+            iters -= 1
+
+            if iters == 0 and row_i < (last_row-1):
+                row_dif = last_row - row_i
+                iters = max_iters
+
+                p1200_multi.dispense((max_vol - iters*volumes[i]), binding_etoh.rows(str(binding_etoh_src_row)))
+
+                if row_dif < max_iters:
+                    p1200_multi.aspirate((row_dif*volumes[i]+disposal_vol), binding_etoh.rows(str(binding_etoh_src_row)))
+                else:
+                    p1200_multi.aspirate(max_vol, binding_etoh.rows(str(binding_etoh_src_row)))
+
 
         p1200_multi.drop_tip()
-        
-        src_row += 2
 
         if i == 1:
+            robot.pause()
+            check = input("Place filter plate at B1. Make sure there is a seal. You will peel this back sequentially. ")
+            robot.resume()
 
             for row_i in range(start_row, last_row):
+                robot.pause()
+                check = input("Peel back seal from %s " % (row_i))
+                robot.resume()
+
                 p1200_multi.pick_up_tip()
                 p1200_multi.mix(3, 500, sample_plate.rows(str(row_i)).bottom())
-                p1200_multi.aspirate(980, sample_plate.rows(str(row_i)).bottom())
+                p1200_multi.aspirate(700, sample_plate.rows(str(row_i)).bottom())
                 p1200_multi.delay(0.5)
-                p1200_multi.aspirate(20, sample_plate.rows(str(row_i)).top())
-                p1200_multi.dispense(1000, filter_plate.rows(str(row_i)).bottom())
+                p1200_multi.aspirate(100, sample_plate.rows(str(row_i)).top())
+                p1200_multi.dispense(800, filter_plate.rows(str(row_i)).bottom(10))
+                p1200_multi.drop_tip()
 
-                # p1200_multi.transfer(980,
-                #     sample_plate.rows(str(row_i)).bottom(),
-                #     filter_plate.rows(str(row_i)),
-                #     mix_before = (3, 500),
-                #     air_gap = 20,
-                #     new_tip = "always"
-                # )
+                if row_i == 10:
+                    p1200_multi.start_at_tip(racks[0].rows("1"))
+                    robot.pause()
+                    check = input("Change tip rack at E1. Press enter to continue. ")
+                    robot.resume()
 
+        binding_etoh_src_row += 1
 
     else:
         robot.pause()
-        check = input("Place filter plate at B1. Add %s to column %s at A1 reservoir. Press enter to continue. " % (what_to_add[(i-2)], wash_src_row))
+        check = input("Place filter plate at B1. Add %s to column %s at A1 reservoir. Press enter to continue. " % (what_to_add[i], wash_src_row))
         robot.resume()
 
         p1200_multi.pick_up_tip()
 
+        max_iters = (max_vol-disposal_vol) // volumes[i]
+        iters = max_iters
+        
+        p1200_multi.aspirate(max_vol, wash.rows(str(wash_src_row)))
+
         for row_i in range(start_row, last_row):
-            p1200_multi.transfer(volumes[i],
-                wash.rows(str(wash_src_row)),
-                filter_plate.rows(str(row_i)).bottom(22),
-                air_gap = 20,
-                new_tip = "never"
-            )
+            p1200_multi.dispense(volumes[i], filter_plate.rows(str(row_i)).bottom(22))
+            iters -= 1
+
+            if iters == 0 and row_i < (last_row-1):
+                row_dif = last_row - row_i
+                iters = max_iters
+
+                p1200_multi.dispense((max_vol - iters*volumes[i]), wash.rows(str(wash_src_row)))
+
+                if row_dif < max_iters:
+                    p1200_multi.aspirate((row_dif*volumes[i]+disposal_vol), wash.rows(str(wash_src_row)))
+                else:
+                    p1200_multi.aspirate(max_vol, wash.rows(str(wash_src_row)))
+
 
         p1200_multi.drop_tip()
 
         if i == 2:
             wash_src_row += 1
+    
 
     if i > 0:
         print("Centrifuge for 5 min at 3000-5000*g. ")
-
-    if i == 1:
-        p1200_multi.start_at_tip(racks[0].rows("1"))
-        robot.pause()
-        check = input("Change tip rack at E1. Press enter to continue. " % (what_to_add[(i-2)], wash_src_row))
-        robot.resume()
     
     print("Loop completion time: %s" % (datetime.now()-loop_start))
 
