@@ -28,20 +28,20 @@ for slot_i in rack_slots:
 # 	)
 
 
-# plates = []
-# plate_slots = ["B1","B2"]
+plates = []
+plate_slots = ["B1","B2"]
 
-# for slot_i in plate_slots:
-# 	plates.append(
-# 		create_container_instance(
-# 			'48-well-7mL-EK-2043', #48-well-7mL-EK-2043_long_tips
-# 			grid =(8,6), #cols,rows
-# 			spacing=(9,18), #mm spacing between each col,row
-# 			diameter=9,
-# 			depth=65, #depth mm of each well 
-# 			slot=slot_i
-# 		)
-# 	)
+for slot_i in plate_slots:
+	plates.append(
+		create_container_instance(
+			'48-well-7mL-EK-2043', #48-well-7mL-EK-2043_long_tips
+			grid =(8,6), #cols,rows
+			spacing=(9,18), #mm spacing between each col,row
+			diameter=9,
+			depth=65, #depth mm of each well 
+			slot=slot_i
+		)
+	)
 
 
 #Load trash
@@ -66,17 +66,25 @@ etoh =  create_container_instance(
     spacing=(9,54), #mm spacing between each col,row
     diameter=8,
     depth=15, #depth mm of each well 
-    slot='A1'
+    slot='D1'
 )
 
-lysis =  create_container_instance(
-    '96-well-252mL-EK-2034-S-12-Col-Divided',
-    grid =(8,12), #cols,rows
-    spacing=(9,9), #mm spacing between each col,row
+etoh1 =  create_container_instance(
+    '96-well-150mL-EK-2299-2-Col-Divided',
+    grid =(8,2), #cols,rows
+    spacing=(9,54), #mm spacing between each col,row
     diameter=8,
-    depth=45, #depth mm of each well 
-    slot='A2'
+    depth=15, #depth mm of each well 
+    slot='A1'
 )
+# lysis =  create_container_instance(
+#     '96-well-252mL-EK-2034-S-12-Col-Divided',
+#     grid =(8,12), #cols,rows
+#     spacing=(9,9), #mm spacing between each col,row
+#     diameter=8,
+#     depth=45, #depth mm of each well 
+#     slot='A2'
+# )
 
 # #Load final plate
 plate_slots = ["B1","B2"]
@@ -85,33 +93,33 @@ final_plates = []
 for slot_i in plate_slots:
 	final_plates.append(
 		create_container_instance(
-		    '96-well-Norgen-filter',
+		    '96-well-Zymo-filter',
 		    grid =(8,12), #cols,rows
 		    spacing=(8.8,8.8), #mm spacing between each col,row
 		    diameter=8,
-		    depth=15, #depth mm of each well 
+		    depth=40, #depth mm of each well 
 		    slot=slot_i
 		)
 	)
 
 sample_plate = create_container_instance(
-        '96-well-Axygen',
+        '96-well-2mL',
         grid =(8,12), #cols,rows
         spacing=(8.8,8.8), #mm spacing between each col,row
         diameter=8,
-        depth=15, #depth mm of each well 
-        slot="B2"
+        depth=40, #depth mm of each well 
+        slot="C1"
 )
 
 
 #Load filter plate
 filter_plate = create_container_instance(
-    '96-well-Zymo-filter',
+    '96-well-Norgen-filter',
     grid =(8,12), #cols,rows
     spacing=(8.8,8.8), #mm spacing between each col,row
     diameter=8,
     depth=15, #depth mm of each well 
-    slot="B1"
+    slot="B2"
 )
 
 p1200_multi = instruments.Pipette(
@@ -133,11 +141,11 @@ p1000 = instruments.Pipette(
 )
 
 #p1000.transfer(100, vial_rack_list[0].wells(), plates[0].wells())
-p1200_multi.transfer(100, lysis.rows(), sample_plate.rows())
+#p1200_multi.transfer(100, lysis.rows(), sample_plate.rows())
 
 
 # for rack in range(1):
-# 	for row in racks[rack].rows():
+# 	for row in racks[rack].rows("12"):
 # 		p1200_multi.pick_up_tip(row)
 # 		p1200_multi.return_tip()
 # 		robot.home("z")
@@ -154,7 +162,7 @@ p1200_multi.transfer(100, lysis.rows(), sample_plate.rows())
 # 		robot.resume()
 
 
-#p1200_multi.transfer(100, etoh.rows(), final_plates[0].rows())
+p1200_multi.transfer(100, etoh.rows(), final_plates[0].rows())
 #p1200_multi.transfer(100, etoh.rows(), final_plates[1].rows())
 
 
@@ -169,8 +177,28 @@ p1200_multi.transfer(100, lysis.rows(), sample_plate.rows())
 
 
 p1200_multi.transfer(100, etoh.rows(), sample_plate.rows())
-p1200_multi.transfer(100, etoh.rows(), filter_plate.rows())
+#p1200_multi.transfer(100, etoh1.rows(), filter_plate.rows())
 # p1000.transfer(100,lysis.wells(), plates[0].wells())
 # p1000.transfer(100,lysis.wells(), plates[1].wells())
 
 #p1200_multi.start_at_tip(racks[0].rows("3"))
+
+
+
+##### Extra code from script 3
+
+        
+        # #Just about 1.5 minutes
+        # p1200_multi.pick_up_tip()
+
+        # for dst_row in plates[plate_pos].rows():
+
+        #     p1200_multi.transfer(300, 
+        #         lysis_etoh.rows(str(src_row_lysis_etoh)),
+        #         dst_row.top(-20),
+        #         air_gap = 20,
+        #         new_tip="never"
+        #     )
+
+        # p1200_multi.blow_out()
+        # p1200_multi.drop_tip()
