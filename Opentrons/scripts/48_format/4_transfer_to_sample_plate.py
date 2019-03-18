@@ -112,4 +112,5 @@ for row_48 in plates[0].rows():
 
 
 print("Total time: %s" % (datetime.now()-start))
+print("Centrifuge for 4 min at max speed (3900 RPM).")
 robot.home()

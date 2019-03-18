@@ -139,7 +139,7 @@ for i in range(4):
     else:
         ## Elute
         robot.pause()
-        check = input("Add 4 mL elution buffer to position %s in 12 column reservoir at A2. Move filter plate to B2. Press enter to continue. " % (elu_src_row))
+        check = input("Add 10 mL elution buffer to position %s in 12 column reservoir at A2. Move filter plate to B2. Press enter to continue. " % (elu_src_row))
         robot.resume()
 
         p1200_multi.pick_up_tip()

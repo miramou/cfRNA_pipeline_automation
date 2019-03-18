@@ -47,7 +47,7 @@ for slot_i in plate_slots:
 			grid =(8,6), #cols,rows
 			spacing=(9,18), #mm spacing between each col,row
 			diameter=9,
-			depth=65, #depth mm of each well 
+			depth=70, #depth mm of each well 
 			slot=slot_i
 		)
 	)
@@ -95,8 +95,14 @@ print("%s" % (start))
 src_row_etoh=2 
 src_row_lysis_etoh=3
 
+max_vol = 1000
+disposal_vol = 50
+lysis_etoh_vol = 300
 
-for i in range(4):  
+start_row =  1
+last_row = 7
+
+for i in range(4):   
     
     loop_start = datetime.now()
 
@@ -116,7 +122,7 @@ for i in range(4):
 
             for dst_row in plates[i].rows(): 
                
-                loop_start_d = datetime.now()
+                #loop_start_d = datetime.now()
 
                 if j == 0:
                     p1200_multi.transfer(etoh_vol,
@@ -132,13 +138,13 @@ for i in range(4):
                     p1200_multi.mix(4, 1000, dst_row.bottom(34))
                     p1200_multi.drop_tip()
 
-                print("Time for loop completion: %s" % (datetime.now() - loop_start_d))
+                #print("Time for loop completion: %s" % (datetime.now() - loop_start_d))
 
             if j == 0:
                 p1200_multi.drop_tip()
 
         robot.pause()
-        check = input("Seal plate %s at location %s and centrifuge for 1 min at 1000 RPM.  " % ((i+1), plate_slots[i]))
+        check = input("Seal plate %s at location %s and centrifuge for 1 min at 2000 RPM.  " % ((i+1), plate_slots[i]))
         robot.resume()
 
     elif i == 1:    
@@ -146,7 +152,7 @@ for i in range(4):
         to_remove_height = [25,20, 15, 6, 2, 1.2] 
 
         robot.pause()
-        check = input("Place deep plate at location %s. Remove seal  " % (plate_slots[i-1]))
+        check = input("Place deep plate at location %s. Only remove seal from first row.  " % (plate_slots[i-1]))
         robot.resume()
 
         trash_row = 1
@@ -200,20 +206,29 @@ for i in range(4):
         
         robot.resume()
 
-        
-        #Just about 1.5 minutes
         p1200_multi.pick_up_tip()
 
-        for dst_row in plates[plate_pos].rows():
+        max_iters = (max_vol-disposal_vol) // lysis_etoh_vol
+        iters = max_iters
+        
+        p1200_multi.aspirate(max_vol, lysis_etoh.rows(str(src_row_lysis_etoh)))
 
-            p1200_multi.transfer(300, 
-                lysis_etoh.rows(str(src_row_lysis_etoh)),
-                dst_row.top(-20),
-                air_gap = 20,
-                new_tip="never"
-            )
+        for row_i in range(start_row, last_row):
+            p1200_multi.dispense(lysis_etoh_vol, plates[plate_pos].rows(str(row_i)).top(-20))
+            iters -= 1
 
-        p1200_multi.blow_out()
+            if iters == 0 and row_i < (last_row-1):
+                row_dif = last_row - row_i
+                iters = max_iters
+
+                p1200_multi.dispense((max_vol - iters*lysis_etoh_vol), lysis_etoh.rows(str(src_row_lysis_etoh)))
+
+                if row_dif < max_iters:
+                    p1200_multi.aspirate((row_dif*lysis_etoh_vol+disposal_vol), lysis_etoh.rows(str(src_row_lysis_etoh)))
+                else:
+                    p1200_multi.aspirate(max_vol, lysis_etoh.rows(str(src_row_lysis_etoh)))
+
+
         p1200_multi.drop_tip()
 
         if i == 2:
@@ -221,6 +236,10 @@ for i in range(4):
 
             robot.pause()
             check = input("Remove deep plate at position %s and incubate for 10 minutes at 60C. Press enter once incubation is complete.  " % (plate_slots[plate_pos]))
+            robot.resume()
+
+            robot.pause()
+            check = input("Change temp on incubator to 37C! Press enter to continue. ")
             robot.resume()
 
         print("Seal plate and vortex for 1 minute.")

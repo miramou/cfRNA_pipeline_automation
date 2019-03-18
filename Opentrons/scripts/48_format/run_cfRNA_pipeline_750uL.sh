@@ -10,12 +10,12 @@ STEP_4=$ROOT_DIR/scripts/48_format/4_transfer_to_sample_plate.py
 STEP_5=$ROOT_DIR/scripts/48_format/5_norgen_add_wash_buffer_elute.py
 STEP_6=$ROOT_DIR/scripts/48_format/6_zymo_clean_conc.py
 
-LYSIS_VOL=1800
-ETOH_VOL=3000
+LYSIS_VOL=1300
+ETOH_VOL=2250
 START_ROW=1
 STOP_ROW=6
 
-echo "cfRNA plasma pipeline to run on opentrons"
+echo "750 uL cfRNA plasma pipeline to run on opentrons"
 echo $DATETIME
 
 source activate py36

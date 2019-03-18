@@ -1,6 +1,5 @@
-#### To do - set up 2 mL alone at B2, set up 2 col div at A2. 
 ##SCRIPT TO ZYMO CLEAN AND CONCENTRATE
-##TIME TO RUN: ~1 hour minutes (with centrifugation) for 12 rows
+##TIME TO RUN: ~1 hour (with centrifugation) for 12 rows
 ##TOTAL TIPS USED: 17 rows
 
 from opentrons import robot, containers, instruments
@@ -44,7 +43,7 @@ filter_plate = create_container_instance(
     grid =(8,12), #cols,rows
     spacing=(8.8,8.8), #mm spacing between each col,row
     diameter=8,
-    depth=15, #depth mm of each well 
+    depth=40, #depth mm of each well 
     slot="B1"
 )
 
@@ -96,10 +95,10 @@ max_vol = 1000
 disposal_vol = 50
 
 volumes = [226, 339, 400, 700, 400] #Binding, EtOH, RNA Prep, Wash, Wash
-what_to_add = ["27 mL binding buffer", "40 mL EtOH", "48 mL RNA prep", "84 mL wash buffer","48 mL wash buffer"]
+what_to_add = ["27 mL binding buffer", "50 mL EtOH", "48 mL RNA prep", "84 mL wash buffer","48 mL wash buffer"]
 
 
-for i in range(5): 
+for i in range(5):   
     loop_start = datetime.now()
 
     if i < 2:
@@ -115,7 +114,7 @@ for i in range(5):
         p1200_multi.aspirate(max_vol, binding_etoh.rows(str(binding_etoh_src_row)))
 
         for row_i in range(start_row, last_row):
-            p1200_multi.dispense(volumes[i], sample_plate.rows(str(row_i)).bottom(22))
+            p1200_multi.dispense(volumes[i], sample_plate.rows(str(row_i)).bottom(30))
             iters -= 1
 
             if iters == 0 and row_i < (last_row-1):
@@ -132,29 +131,34 @@ for i in range(5):
 
         p1200_multi.drop_tip()
 
-        if i == 1:
-            robot.pause()
-            check = input("Place filter plate at B1. Make sure there is a seal. You will peel this back sequentially. ")
-            robot.resume()
+        # if i == 1:
+        #     robot.pause()
+        #     check = input("Place filter plate at B1. Make sure there is a seal on both plates. You will peel this back sequentially. ")
+        #     robot.resume()
 
-            for row_i in range(start_row, last_row):
-                robot.pause()
-                check = input("Peel back seal from %s " % (row_i))
-                robot.resume()
+        #     for row_i in range(start_row, last_row): 
+        #         #loop_start_inner = datetime.now()
 
-                p1200_multi.pick_up_tip()
-                p1200_multi.mix(3, 500, sample_plate.rows(str(row_i)).bottom())
-                p1200_multi.aspirate(700, sample_plate.rows(str(row_i)).bottom())
-                p1200_multi.delay(0.5)
-                p1200_multi.aspirate(100, sample_plate.rows(str(row_i)).top())
-                p1200_multi.dispense(800, filter_plate.rows(str(row_i)).bottom(10))
-                p1200_multi.drop_tip()
+        #         robot.pause()
+        #         check = input("Peel back seal from %s " % (row_i))
+        #         robot.resume()
 
-                if row_i == 10:
-                    p1200_multi.start_at_tip(racks[0].rows("1"))
-                    robot.pause()
-                    check = input("Change tip rack at E1. Press enter to continue. ")
-                    robot.resume()
+        #         p1200_multi.pick_up_tip()
+        #         p1200_multi.mix(3, 500, sample_plate.rows(str(row_i)).bottom())
+        #         p1200_multi.aspirate(900, sample_plate.rows(str(row_i)).bottom())
+        #         p1200_multi.delay(0.5)
+        #         p1200_multi.aspirate(100, sample_plate.rows(str(row_i)).top())
+        #         p1200_multi.dispense(1000, filter_plate.rows(str(row_i)).bottom(10))
+        #         p1200_multi.aspirate(200, filter_plate.rows(str(row_i)).bottom(20)) #air gap
+        #         p1200_multi.drop_tip()
+
+        #         #print("Loop completion time: %s" % (datetime.now() - loop_start_inner))
+
+        #         if row_i == 10:
+        #             p1200_multi.start_at_tip(racks[0].rows("1"))
+        #             robot.pause()
+        #             check = input("Change tip rack at E1. Press enter to continue. ")
+        #             robot.resume()
 
         binding_etoh_src_row += 1
 
