@@ -1,0 +1,54 @@
+/Users/miramou/Library/Application Support/OT One App 2/otone_data/calibrations/calibrations.json
+Step 1: Add lysis and slurry to plate
+2019-02-04 13:31:27.484743
+Move deep well plate to B2. Add 10.5 mL slurry to position 1 at A2. Add 110 mL lysis buffer to position at A1. Press enter to continue. Time for loop completion: 0:02:05.548542
+Move deep well plate to B1. Add 10.5 mL slurry to position 2 at A2. Add 110 mL lysis buffer to position at A1. Press enter to continue. Time for loop completion: 0:02:37.042946
+Total time: 0:05:05.881871
+/Users/miramou/Library/Application Support/OT One App 2/otone_data/calibrations/calibrations.json
+Step 3: Add ethanol, centrifuge, decant supernatant, add lysis, incubate
+2019-02-04 14:10:17.717466
+Place deep plate at location B1. Fill A1 reservoir with 150 mL EtOH at position 2.  Seal plate 1 at location B1 and centrifuge for 1 min at 2000 RPM.  Time for loop completion: 0:10:35.948913
+Place deep plate at location B1. Only remove seal from first row.  Peel back seal from next row. Time for loop completion: 0:01:53.555072
+Peel back seal from next row. Time for loop completion: 0:01:45.842747
+Peel back seal from next row. Time for loop completion: 0:01:45.480620
+Replace tip rack at position E1Peel back seal from next row. Time for loop completion: 0:01:43.968954
+Peel back seal from next row. Time for loop completion: 0:01:45.366943
+Peel back seal from next row. Time for loop completion: 0:01:45.187841
+Time for loop completion: 0:12:03.433054
+Move deep plate to B2. Add 20 mL lysis buffer into column 3 of 12-col divided plate. Press enter to continue Remove deep plate at position B2 and incubate for 10 minutes at 60C. Press enter once incubation is complete.  Change temp on incubator to 37C! Press enter to continue. Seal plate and vortex for 1 minute.
+Time for loop completion: 0:13:22.634858
+Move deep plate to B2. Add 20 mL EtOH buffer into column 5 of 12-col divided plate. Press enter to continue Seal plate and vortex for 1 minute.
+Time for loop completion: 0:00:48.395579
+Total time: 0:37:30.924243
+/Users/miramou/Library/Application Support/OT One App 2/otone_data/calibrations/calibrations.json
+Step 5: Wash filter plate and elute
+2019-02-04 14:57:11.094196
+Wash 1
+Place filter plate at position B1 after centrifugation. Remove seal from 2-column wash plate at A1 and add 24 mL wash. Empty trash. Press enter to continue with wash addition. Centrifuge for 3 min at max (3900 RPM). Add 24 mL wash buffer to 2-column wash reservoir at col 1. 
+Loop completion time: 0:05:02.885458
+
+Wash 2
+Place filter plate at position B1 after centrifugation. Remove seal from 2-column wash plate at A1 and add 24 mL wash. Empty trash. Press enter to continue with wash addition. Centrifuge for 3 min at max (3900 RPM). Add 24 mL wash buffer to 2-column wash reservoir at col 1. 
+Loop completion time: 0:05:59.588999
+
+Wash 3
+Place filter plate at position B1 after centrifugation. Remove seal from 2-column wash plate at A1 and add 24 mL wash. Empty trash. Press enter to continue with wash addition. Centrifuge for 8 min at max speed (3900 RPM). 
+Loop completion time: 0:05:50.502353
+
+Add 10 mL elution buffer to position 7 in 12 column reservoir at A2. Move filter plate to B2. Press enter to continue. Loop completion time: 0:10:58.121833
+
+Total time: 0:27:51.098737
+Centrifuge at max speed for 5 minutes. 
+/Users/miramou/Library/Application Support/OT One App 2/otone_data/calibrations/calibrations.json
+Step 6: Zymo Clean and Concentrate
+2019-02-04 15:40:31.684174
+Place sample plate at C1. Add 27 mL binding buffer to column 1 at D1 reservoir. Press enter to continue. Loop completion time: 0:16:02.219959
+Place sample plate at C1. Add 50 mL EtOH to column 2 at D1 reservoir. Press enter to continue. Centrifuge for 5 min at 3000-5000*g. 
+Loop completion time: 0:01:52.781000
+Place filter plate at B1. Add 48 mL RNA prep to column 1 at A1 reservoir. Press enter to continue. Centrifuge for 5 min at 3000-5000*g. 
+Loop completion time: 0:13:07.926064
+Place filter plate at B1. Add 84 mL wash buffer to column 2 at A1 reservoir. Press enter to continue. Centrifuge for 5 min at 3000-5000*g. 
+Loop completion time: 0:09:23.610287
+Place filter plate at B1. Add 48 mL wash buffer to column 2 at A1 reservoir. Press enter to continue. Centrifuge for 5 min at 3000-5000*g. 
+Loop completion time: 0:08:40.927653
+Total time: 0:49:07.465112
