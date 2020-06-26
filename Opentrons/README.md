@@ -1,9 +1,8 @@
 # Running cfRNA extraction from plasma pipeline using Opentrons
-***Takes ~6 hours on OT to run the entire pipeline. Process 48 samples at a time through Norgen kit and then pool for DNAse and Zymo***
+***Takes ~4.5 hours on OT to run the entire pipeline. Process 48 samples at a time through Norgen kit and then pool for DNAse and Zymo***
 ***Uses 9 tip boxes total***
 
 # Overview
-* Implements all steps up to using filter plate to clean up cfRNA extracted using Norgen kit, DNase treatment, and Zymo kit. 
 * Can process up to 1 mL of plasma in each well of 48 well plate (Max vol 7.5 mL).
 * Protocol run time relies on reagent setup (configuration), head speed (see setup.py), and plunger speed (see each ind. script)
 
@@ -33,6 +32,5 @@
 
 # Notes
 * DO NOT use vacuum manifold - this results in inconsistent yields due to variable pull-through
-* Make sure centrifuge is at 4C
 * Prep all reagents before hand but no need to aliquot into plates.
 * Make a spreadsheet to log experiment.
