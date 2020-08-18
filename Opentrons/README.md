@@ -49,7 +49,9 @@ Pipeline to run OT to process 96 samples as described in accompanying manuscript
 * Check calibrations using 0_calibration file - uncommenting and commenting for objects in the same physical position as needed
 * Follow instructions in bash script. Pipette trash is ziploc bag. Liquid trash is old pipette box with top removed.
 * Deploy bash script "run_cfRNA_pipeline.sh" to run pipeline as follows. Note that pipeline currently set up to process 1 mL samples and you will have to modify volumes to process other sample volumes.
+		
 		> bash <path_to_run_cfRNA_pipeline.sh> <expt_prefix>
+		
 * Log file can be found at "cfRNA_pipeline_automation/Opentrons/logs/expt_prefix.$DATETIME.log" where expt_prefix represents the argument you passed to the bash script above and $DATETIME represents the date and time the pipeline was run
 
 # The steps
