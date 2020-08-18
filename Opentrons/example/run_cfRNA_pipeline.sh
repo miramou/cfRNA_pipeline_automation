@@ -1,6 +1,6 @@
 #!/bin/bash
 (
-ROOT_DIR=/Users/miramou/Documents/Grad/Lab/Projects/cfRNA_scale_up_test/Automation/Opentrons
+ROOT_DIR="." #EDIT IF YOU'D LIKE TO LAUNCH SCRIPT OUTSIDE OF OPENTRONS FOLDER
 DATETIME=$(date "+%Y_%m_%d_%H_%M_%S")
 LOG_FILE=$ROOT_DIR/logs/$1.$DATETIME.log
 
@@ -18,12 +18,12 @@ STOP_ROW=6
 echo "cfRNA plasma pipeline to run on opentrons"
 echo $DATETIME
 
-source activate py36
+conda activate ot
 
 if [ $# -eq 0 ]
 	then
 		#nothing happens
-		echo "Please type in log file path to start. "
+		echo "Please type in log file name prefix e.g. expt1 to start. "
 else
 	python $STEP_1 $LYSIS_VOL | tee -a "$LOG_FILE"
 	echo
@@ -46,7 +46,7 @@ else
 			* ) read -p "Enter row 1 or 7 (depending on if first or second plate). " FILTER_ROW;;
 		esac
 	done
-	#python $STEP_4 $FILTER_ROW | tee -a "$LOG_FILE"
+	python $STEP_4 $FILTER_ROW | tee -a "$LOG_FILE"
 	echo
 
 	python $STEP_5 $START_ROW $STOP_ROW | tee -a "$LOG_FILE"
