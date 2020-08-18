@@ -15,7 +15,6 @@ Pipeline to run OT to process 96 samples as described in accompanying manuscript
 * Create a virtual environment to run the associated launch script
 
 		> conda env create -f env/ot.yaml
-
 * Download OT app version 2.5.2 for OT1 via https://opentrons.com/ot-app/
 * Copy the "run_cfRNA_pipeline.sh" provided in example/
 * In run_cfRNA_pipeline.sh, change $ROOT_DIR specified as appropriate
