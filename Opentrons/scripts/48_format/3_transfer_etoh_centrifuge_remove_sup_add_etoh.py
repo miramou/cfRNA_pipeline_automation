@@ -172,15 +172,16 @@ for i in range(4):
                 else:
                     p1200_multi.aspirate(10, row.top())
 
-                p1200_multi.dispense((to_remove_vol[j]+20), liquid_trash.rows(str(trash_row)).bottom())
+                p1200_multi.dispense((to_remove_vol[j]+20), liquid_trash.rows(str(trash_row)).bottom(35))
                 p1200_multi.delay(0.2)
                 p1200_multi.blow_out()
-                p1200_multi.aspirate(10, liquid_trash.rows(str(trash_row)).bottom())
+                p1200_multi.aspirate(10, liquid_trash.rows(str(trash_row)).bottom(35))
 
             #Add pause to peel back seal
-            robot.pause()
-            check = input("Peel back seal from next row. ")
-            robot.resume()
+            if row != plates[(i-1)].rows("6"):
+                robot.pause()
+                check = input("Peel back seal from next row. ")
+                robot.resume()
 
             p1200_multi.drop_tip()
             trash_row += 1
