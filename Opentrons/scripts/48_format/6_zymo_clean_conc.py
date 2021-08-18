@@ -97,6 +97,12 @@ disposal_vol = 50
 volumes = [226, 339, 400, 700, 400] #Binding, EtOH, RNA Prep, Wash, Wash
 what_to_add = ["27 mL binding buffer", "50 mL EtOH", "48 mL RNA prep", "84 mL wash buffer","48 mL wash buffer"]
 
+robot.pause()
+if last_row > 6:
+    check = input("Place one regular length tip rack with 3 rows you previously set aside at E1. Tips should face front/you. Press enter to continue. ")
+else:
+    check = input("Place one new regular length tip rack with 12 rows at E1. Press enter to continue. ")
+robot.resume()
 
 for i in range(5):   
     loop_start = datetime.now()
@@ -131,17 +137,24 @@ for i in range(5):
 
         p1200_multi.drop_tip()
 
+
         if i == 1:
             robot.pause()
             check = input("Place filter plate at B1. Make sure there is a seal on both plates. You will peel this back sequentially. ")
             robot.resume()
 
+            if last_row > 6:
+                p1200_multi.start_at_tip(racks[0].rows("1"))
+                robot.pause()
+                check = input("Change tip rack at E1. Press enter to continue. ")
+                robot.resume()
+
             for row_i in range(start_row, last_row): 
                 #loop_start_inner = datetime.now()
 
-                robot.pause()
-                check = input("Peel back seal from %s " % (row_i))
-                robot.resume()
+                # robot.pause()
+                # check = input("Peel back seal from %s " % (row_i))
+                # robot.resume()
 
                 p1200_multi.pick_up_tip()
                 p1200_multi.mix(3, 500, sample_plate.rows(str(row_i)).bottom())
@@ -149,16 +162,16 @@ for i in range(5):
                 p1200_multi.delay(0.5)
                 p1200_multi.aspirate(100, sample_plate.rows(str(row_i)).top())
                 p1200_multi.dispense(1000, filter_plate.rows(str(row_i)).bottom(10))
-                p1200_multi.aspirate(200, filter_plate.rows(str(row_i)).bottom(20)) #air gap
+                p1200_multi.aspirate(200, filter_plate.rows(str(row_i)).bottom(25)) #air gap
                 p1200_multi.drop_tip()
 
                 #print("Loop completion time: %s" % (datetime.now() - loop_start_inner))
 
-                if row_i == 10:
-                    p1200_multi.start_at_tip(racks[0].rows("1"))
-                    robot.pause()
-                    check = input("Change tip rack at E1. Press enter to continue. ")
-                    robot.resume()
+            if last_row > 6:
+                p1200_multi.start_at_tip(racks[0].rows("1"))
+                robot.pause()
+                check = input("Change tip rack at E1 with one regular length tip rack with 3 rows you previously set aside. Tips should face front/you. Press enter to continue. ")
+                robot.resume()
 
         binding_etoh_src_row += 1
 
