@@ -46,7 +46,7 @@ Pipeline to run OT to process 96 samples as described in accompanying manuscript
 # How to run
 * Each month, check that all screws are tightly fastened on robot
 * Thoroughly clean Opentrons robot. Careful not to bump pipettes though they should be solidly in place.
-* Check calibrations using 0_calibration file - uncommenting and commenting for objects in the same physical position as needed
+* Check calibrations using scripts/calibration/X_calibration.py files - where X reflects the step number the deck is set up for. 
 * Follow instructions in bash script. Pipette trash is ziploc bag. Liquid trash is old pipette box with top removed.
 * Deploy bash script "run_cfRNA_pipeline.sh" to run pipeline as follows. Note that pipeline currently set up to process 1 mL samples and you will have to modify volumes to process other sample volumes.
 		
