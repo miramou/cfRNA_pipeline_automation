@@ -239,7 +239,7 @@ for i in range(4):
             robot.resume()
 
             robot.pause()
-            check = input("Change temp on incubator to 37C! Press enter to continue. ")
+            check = input("If you are done with cfRNA extraction (no more plasma samples), change temp on incubator to 37C! Press enter to continue. ")
             robot.resume()
 
         print("Seal plate and vortex for 1 minute.")
