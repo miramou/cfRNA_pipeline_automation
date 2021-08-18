@@ -82,7 +82,7 @@ print("Step 5: Wash filter plate and elute")
 print("%s" % (start))
 
 src_row = 1 #wash source row
-elu_src_row = 7
+elu_src_row = 9
 
 start_row = int(sys.argv[1])
 last_row = int(sys.argv[2])+1
@@ -91,6 +91,8 @@ max_vol = 1000
 disposal_vol = 50
 wash_vol = 400
 elu_vol = 120
+
+p1200_multi.start_at_tip(racks[0].rows("6")) ## Continue from  step 3 where 5 rows were used.
 
 for i in range(4): 
 #Just under 5.5 min per plate
