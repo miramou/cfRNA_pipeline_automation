@@ -82,7 +82,7 @@ row_96 = int(sys.argv[1])
 #Just under 6 min per plate
 
 robot.pause()
-check = input("Place plate 1 at position B1. Place filter plate at position A1. Remove seal. Empty trash at C1. Press enter to continue with sample transfer. " )
+check = input("Place plate 1 at position B1. Place filter plate at position A1 moving filter plate to top left corner (when facing the OT). Remove seal. Empty trash at C1. Press enter to continue with sample transfer. " )
 robot.resume()
 
 
